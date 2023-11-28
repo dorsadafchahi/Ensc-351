@@ -1,11 +1,14 @@
 #ifndef TIME_H
 #define TIME_H
-#include "time.c"
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <stdbool.h>
 
 // Get current time function
-static long long getTimeInMicroSeconds(void);
+long long getTimeInMicroS(void);
 
 // Add delay (in number of milliseconds)
-static void sleepForMs(long long delayInMs);
+void sleepForMs(long long delayInMs);
 
 #endif

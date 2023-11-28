@@ -1,9 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <stdbool.h>
+#include "time.h"
 
-static long long getTimeInMicroSeconds(void) {
+long long getTimeInMicroS(void) {
     struct timespec spec;
     clock_gettime(CLOCK_REALTIME, &spec);
     long long seconds = spec.tv_sec;
@@ -12,7 +9,7 @@ static long long getTimeInMicroSeconds(void) {
     return microSeconds;
 }
 
-static void sleepForMs(long long delayInMs) {
+void sleepForMs(long long delayInMs) {
     const long long NS_PER_MS = 1000 * 1000;
     const long long NS_PER_SECOND = 1000000000;
 

@@ -3,8 +3,14 @@
 // It provides access to the raw samples and then deletes them.
 #ifndef SAMPLER_H
 #define SAMPLER_H
-#include "sampler.c"
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <stdbool.h>
+#include <pthread.h>
 #include "time.h"
+#define PhotoRes "/sys/bus/iio/devices/iio:device0/in_voltage1_raw"
+
 
 typedef struct {
     double sampleInV;
@@ -12,8 +18,11 @@ typedef struct {
 } samplerDatapoint_t;
 
 // Begin/end the background thread which samples light levels.
-void * Sampler_startSampling(double buffer[]);
-void Sampler_stopSampling(void);
+void *Sampler_startSampling();
+void Sampler_stopSampling();
+
+//thead function to run in tandem with start sampling, that, with the help of mutexes, will analyze the array after it is filled
+void *Sampler_startAnalysis();
 
 // Get a copy of the samples in the sample history, removing values
 // from our history here.

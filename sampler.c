@@ -37,34 +37,32 @@ void *Sampler_startSampling() {
         printf("mutex lock initialization failed\n");
         exit(-1);
     }
-        // printf("test\n");
-
+    
     //start sampling here
     while(1){
         int value;
         // double voltage;
         value = sampleInVolts();
         // voltage = convertToVoltage(value);
-        //this should never happen
+
+        //this should only happen if thread2 is gonna stop, eg the button was pressed
         if(buffer_index > 900){
-            printf("Error, buffer index too high\n");
-            exit(-1);
+            printf("Done shutdown! Goodbye!\n");
+            return NULL;
         }
-        // printf("> test whileloop\n");
 
         //lock the mutex
         pthread_mutex_lock(&mutexlock);
-        // printf("test lock\n");
 
         //store values in the struct
         buffer[buffer_index].sampleInV = value;
         buffer[buffer_index].getTimeInMicroSeconds = getTimeInMicroS();
         buffer_index++;
-        //unlock the mutex, for the second thread to gain access
-        pthread_mutex_unlock(&mutexlock);
-        // printf("test unlock\n");
 
-        sleepForMs(5);
+        //unlock the mutex, for the second thread to gain access if need be
+        pthread_mutex_unlock(&mutexlock);
+
+        sleepForMs(1.5);
     }
     return NULL;
 }
@@ -79,23 +77,19 @@ void *Sampler_startAnalysis() {
     // long long max_time;
     // long long min_time;
     //int num_dips();
-    printf("starting thread2\n");
-    int i;
+
     //lock the mutex for use
     pthread_mutex_lock(&mutexlock);
     //ALL CALCULATIONS HERE WITH
     //buffer[buffer_index2].sampleInV
     //buffer[buffer_index2].timestampInNanoS
     //buffer_index++;
-    printf("test ---------------------\n");
-    for(i = 0; i < buffer_index; i++) {
-        printf("buffer: %f\n", buffer[i].sampleInV);
-    }
-    printf("samples in buffer: %d\n\n\n", i);
+
+    printf("samples in buffer: %d\n", buffer_index);
+    //reset the buffer_index to 0, to make the thread1 start from 0 filling the struct array
     buffer_index = 0;
     pthread_mutex_unlock(&mutexlock);
-    printf("Interval ms (0.000, 3.058) avg=1.825   Samples V (1.289, 1.300) avg=1.124   # Dips:   0   # Samples:    547\n");
-    // sleepForMs(10);
+    //printf("Interval ms (0.000, 3.058) avg=1.825   Samples V (1.289, 1.300) avg=1.124   # Dips:   0   # Samples:    547\n");
     return NULL;
 }
 

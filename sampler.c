@@ -71,11 +71,11 @@ void *Sampler_startAnalysis() {
     // int buffer_index = 0;
     //these are all the values we will calculate in this function for printf at the end
     double average_voltage = 0;
-    double min_voltage;
-    double max_voltage;
-    long long average_time = 0;
-    long long max_time;
-    long long min_time;
+    // double min_voltage;
+    // double max_voltage;
+    // long long average_time = 0;
+    // long long max_time;
+    // long long min_time;
     int num_dips = 0;
 
     //lock the mutex for use

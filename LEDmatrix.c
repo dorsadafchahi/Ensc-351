@@ -1,6 +1,6 @@
 #include "LEDmatrix.h"
 
-static int initI2cBus(char* bus, int address) 
+int initI2cBus(char* bus, int address) 
 { 
     int i2cFileDesc = open(bus, O_RDWR); 
     int result = ioctl(i2cFileDesc, I2C_SLAVE, address); 
@@ -11,7 +11,7 @@ static int initI2cBus(char* bus, int address)
     return i2cFileDesc; 
 }
 
-static void writeI2cReg(int i2cFileDesc, unsigned char regAddr, unsigned char value) 
+void writeI2cReg(int i2cFileDesc, unsigned char regAddr, unsigned char value) 
 { 
     unsigned char buff[2]; 
     buff[0] = regAddr; 
@@ -23,7 +23,7 @@ static void writeI2cReg(int i2cFileDesc, unsigned char regAddr, unsigned char va
     }
 }
 
-static unsigned char readI2cReg(int i2cFileDesc, unsigned char regAddr) 
+unsigned char readI2cReg(int i2cFileDesc, unsigned char regAddr) 
 { 
     // To read a register, must first write the address 
     int res = write(i2cFileDesc, &regAddr, sizeof(regAddr)); 
@@ -42,23 +42,3 @@ static unsigned char readI2cReg(int i2cFileDesc, unsigned char regAddr)
     return value; 
 }
 
-int main() 
-{ 
-    printf("Drive display (assumes GPIO #61 and #44 are output and 1\n"); 
-    int i2cFileDesc = initI2cBus(I2CDRV_LINUX_BUS1, I2C_DEVICE_ADDRESS); 
-    writeI2cReg(i2cFileDesc, REG_DIRA, 0x00); 
-    writeI2cReg(i2cFileDesc, REG_DIRB, 0x00); 
-    
-    // Drive an hour-glass looking character 
-    // (Like an X with a bar on top & bottom) 
-    writeI2cReg(i2cFileDesc, REG_OUTA, 0x2A); 
-    writeI2cReg(i2cFileDesc, REG_OUTB, 0x54); 
-    
-    // Read a register: 
-    unsigned char regVal = readI2cReg(i2cFileDesc, REG_OUTA); 
-    printf("Reg OUT-A = 0x%02x\n", regVal); 
-    
-    // Cleanup I2C access; 
-    close(i2cFileDesc); 
-    return 0; 
-}

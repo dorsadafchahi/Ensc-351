@@ -9,8 +9,8 @@
 #include <stdbool.h>
 #include <pthread.h>
 #include "time.h"
+#include "LEDmatrix.h"
 #define PhotoRes "/sys/bus/iio/devices/iio:device0/in_voltage1_raw"
-
 
 typedef struct {
     double sampleInV;
@@ -24,18 +24,13 @@ void Sampler_stopSampling();
 //thead function to run in tandem with start sampling, that, with the help of mutexes, will analyze the array after it is filled
 void *Sampler_startAnalysis();
 
-// Get a copy of the samples in the sample history, removing values
-// from our history here.
-// Returns a newly allocated array and sets `length` to be the
-// number of elements in the returned array (output-only parameter).
-// The calling code must call free() on the returned pointer.
-// Note: function provides both data and size to ensure consistency.
-samplerDatapoint_t* Sampler_extractAllValues(int *length);
+//convert the 4095 number to voltage
+double convertToVoltage(double number);
 
-// Returns how many valid samples are currently in the history.
-int Sampler_getNumSamplesInHistory();
+//functions to calculate analysis on the data accumulated in the structured array
+double calculate_averageV(int index, double current_avg);
+bool calculate_dip(int index, double average);
+long long calculate_averageT(long long time_interval, long long current_avg);
 
-// Get the total number of light level samples taken so far.
-long long Sampler_getNumSamplesTaken(void);
 
 #endif

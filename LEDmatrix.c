@@ -25,7 +25,7 @@ int initI2cBus(char* bus, int address)
 
 void writeI2cReg(int i2cFileDesc, unsigned char regAddr, unsigned char *value) 
 { 
-    unsigned char buff[15]; 
+    unsigned char buff[17]; 
     buff[0] = regAddr; 
     int i2 = 1;
     for (int i = 0; i < 8; i++){

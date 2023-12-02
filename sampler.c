@@ -41,7 +41,7 @@ void *Sampler_startSampling() {
     //start sampling here
     while(1){
         int value;
-        // double voltage;
+        double voltage;
         value = sampleInVolts();
         voltage = convertToVoltage(value);
 
@@ -80,7 +80,7 @@ void *Sampler_startAnalysis() {
 
     //lock the mutex for use
     pthread_mutex_lock(&mutexlock);
-    //loop through entire buffer structure array
+    //loop through entire buffer structure array for ALL CALCULATIONS
     for (int i = 0; i < buffer_index; i++){
         //average voltage calculated
         average_voltage = calculate_averageV(i, average_voltage);
@@ -118,12 +118,13 @@ void *Sampler_startAnalysis() {
             max_time = time_interval;
         }
     }
+    
+    
     //reset the buffer_index to 0, to make the thread1 start from 0 filling the struct array
     buffer_index = 0;
     //unlock the mutex for use
     pthread_mutex_unlock(&mutexlock);
     printf("Interval ms (%llu, %llu) avg=%llu   Samples V (%f, %f) avg=%f   # Dips:   %d   # Samples:    %d\n", min_time, max_time, average_time, min_voltage, max_voltage, average_voltage, num_dips, buffer_index);
-    //Interval ms (1.342, 2.659) avg=1.826   Samples V (0.722, 1.300) avg=1.231   # Dips:   1   # Samples:    548
 
     //this is area where we display onto the LED matrix based on the joystick position
     
@@ -133,7 +134,7 @@ void *Sampler_startAnalysis() {
 
 //convert voltage number 4095 to volts (1.4V eg)
 double convertToVoltage(double number){
-    double voltage = (number / 4095) * 1.8
+    double voltage = (number / 4095) * 1.8;
     return voltage;
 }
 

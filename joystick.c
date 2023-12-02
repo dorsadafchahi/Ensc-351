@@ -27,8 +27,7 @@ double Joystick_readY() {
 }
 
 int getDirection(){
-	double Xval = Joystick_readX();
-	double Yval = Joystick_readY();
-	if ()
-	return NULL;
+	// double Xval = Joystick_readX();
+	// double Yval = Joystick_readY();
+	return 0;
 }

@@ -43,7 +43,7 @@ void *Sampler_startSampling() {
         int value;
         // double voltage;
         value = sampleInVolts();
-        // voltage = convertToVoltage(value);
+        voltage = convertToVoltage(value);
 
         //this should only happen if thread2 is gonna stop, eg the button was pressed
         if(buffer_index > 900){
@@ -55,7 +55,7 @@ void *Sampler_startSampling() {
         pthread_mutex_lock(&mutexlock);
 
         //store values in the struct
-        buffer[buffer_index].sampleInV = value;
+        buffer[buffer_index].sampleInV = voltage;
         buffer[buffer_index].getTimeInMicroSeconds = getTimeInMicroS();
         buffer_index++;
 
@@ -71,28 +71,59 @@ void *Sampler_startAnalysis() {
     // int buffer_index = 0;
     //these are all the values we will calculate in this function for printf at the end
     double average_voltage = 0;
-    // double min_voltage;
-    // double max_voltage;
-    // long long average_time = 0;
-    // long long max_time;
-    // long long min_time;
+    double min_voltage = 0.9;
+    double max_voltage = 0.9;
+    long long average_time = 0;
+    long long max_time = 0;
+    long long min_time = 2;
     int num_dips = 0;
 
     //lock the mutex for use
     pthread_mutex_lock(&mutexlock);
     //loop through entire buffer structure array
     for (int i = 0; i < buffer_index; i++){
+        //average voltage calculated
         average_voltage = calculate_averageV(i, average_voltage);
-
+        
+        //min and max voltage checked
+        if (buffer[i].sampleInV < min_voltage){
+            min_voltage = buffer[i].sampleInV;
+        }
+        if (buffer[i].sampleInV > max_voltage){
+            max_voltage = buffer[i].sampleInV;
+        }
+        
+        //calculate if there was a dip
         if (calculate_dip(i, average_voltage) == true){
             num_dips++;
+        }
+        
+        //time analysis
+        long long time_interval = 0;
+        if (i == 0){
+            time_interval = buffer[0].getTimeInMicroSeconds;
+        }
+        else{
+            time_interval = buffer[i].getTimeInMicroSeconds - buffer[i-1].getTimeInMicroSeconds;
+        }
+        
+        //average time intervals
+        average_time = calculate_averageT(time_interval, average_time);
+        
+        //check for min max time interval
+        if (time_interval < min_time){
+            min_time = time_interval;
+        }
+        if (time_interval > max_time){
+            max_time = time_interval;
         }
     }
     //reset the buffer_index to 0, to make the thread1 start from 0 filling the struct array
     buffer_index = 0;
     //unlock the mutex for use
     pthread_mutex_unlock(&mutexlock);
-    //printf("Interval ms (0.000, 3.058) avg=1.825   Samples V (1.289, 1.300) avg=1.124   # Dips:   0   # Samples:    547\n");
+    printf("Interval ms (%llu, %llu) avg=%llu   Samples V (%f, %f) avg=%f   # Dips:   %d   # Samples:    %d\n", min_time, max_time, average_time, min_voltage, max_voltage, average_voltage, num_dips, buffer_index);
+    //Interval ms (1.342, 2.659) avg=1.826   Samples V (0.722, 1.300) avg=1.231   # Dips:   1   # Samples:    548
 
     //this is area where we display onto the LED matrix based on the joystick position
     
@@ -100,12 +131,21 @@ void *Sampler_startAnalysis() {
     return NULL;
 }
 
+//convert voltage number 4095 to volts (1.4V eg)
+double convertToVoltage(double number){
+    double voltage = (number / 4095) * 1.8
+    return voltage;
+}
+
 //function to calculate the average of the voltages so far
 double calculate_averageV(int index, double current_avg){
     double new_avg;
-    double before_total = current_avg*(index-1);
-    double new_total = before_total + buffer[index].sampleInV;
-    new_avg = new_total/index;
+    if (current_avg == 0){
+        new_avg = buffer[index].sampleInV;
+    }
+    else{
+        new_avg = current_avg*0.999 + buffer[index].sampleInV*0.001;
+    }
     return new_avg;
 }
 
@@ -124,6 +164,19 @@ bool calculate_dip(int index, double average){
         return false;
     }
 }
+
+//function to calculate average of time intervals
+long long calculate_averageT(long long time_interval, long long current_avg){
+    long long new_avg;
+    if (current_avg == 0){
+        new_avg = time_interval;
+    }
+    else{
+        new_avg = (current_avg + time_interval) /2;
+    }
+    return new_avg;
+}
+
 
 //function to end
 void Sampler_stopSampling() {

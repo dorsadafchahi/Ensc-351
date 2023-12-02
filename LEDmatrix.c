@@ -1,6 +1,6 @@
 #include "LEDmatrix.h"
 
-char zero[] =   {7, 5, 5, 5, 5, 5, 7};
+char zero[] =   {7, 5, 5, 5, 5, 5, 7};// each of these numbers represent a lint on the 8x8 LED matrix, in binary so 7 would be ..., 5 would be . .
 char one[] =    {3, 2, 2, 2, 2, 2, 7};
 char two[] =    {7, 4, 4, 7, 1, 1, 7};
 char three[] =  {7, 4, 4, 7, 4, 4, 7};

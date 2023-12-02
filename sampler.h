@@ -24,9 +24,13 @@ void Sampler_stopSampling();
 //thead function to run in tandem with start sampling, that, with the help of mutexes, will analyze the array after it is filled
 void *Sampler_startAnalysis();
 
+//convert the 4095 number to voltage
+double convertToVoltage(double number);
+
 //functions to calculate analysis on the data accumulated in the structured array
 double calculate_averageV(int index, double current_avg);
 bool calculate_dip(int index, double average);
+long long calculate_averageT(long long time_interval, long long current_avg);
 
 
 #endif

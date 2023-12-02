@@ -9,7 +9,6 @@
 #define USER_BUTTON_DIRECTION  "/sys/class/gpio/gpio72/direction"
 
 int getGPIOvalue();
-double voltage_file_read(char* file_name);
 void runCommand(char* command);
 void writetoFile(const char* value);
 

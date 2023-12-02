@@ -1,0 +1,2 @@
+#!/bin/sh
+sshpass -p temppwd ssh debian@192.168.7.2

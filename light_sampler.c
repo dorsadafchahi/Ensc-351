@@ -41,7 +41,14 @@ int main(int argc, char* args[])
         Yval = Joystick_readY();
         //Xval = convertToVoltage(Xval);
         //Yval = convertToVoltage(Yval);
-        printf("X value = %f, Yval = %f", Xval, Yval);
+        printf("X value : %f, Yval : %f\n", Xval, Yval);
+    }
+
+    //testing for photoresistor
+    double photoVALUE;
+    for (int j = 0; j < 1000; j++){
+        photoVALUE = sampleInVolts();
+        printf("Photoresistor value : %f\n", photoVALUE);
     }
    
     // //initialize the GPIO USER BUTTON
@@ -53,9 +60,9 @@ int main(int argc, char* args[])
     runCommand("config-pin P9_17 i2c");
     runCommand("i2cset -y 1 0x70 0x21 0x00");
     runCommand("i2cset -y 1 0x70 0x81 0x00");
-/*
-    long long start_time = getTimeInMicroS();
-    long long current_time = getTimeInMicroS();
+
+    //long long start_time = getTimeInMicroS();
+    //long long current_time = getTimeInMicroS();
     
     // //run thread 1 to fill the struct
     // pthread_create(&thread1, NULL, &Sampler_startSampling, NULL);
@@ -79,6 +86,6 @@ int main(int argc, char* args[])
     //     }
     //     current_time = getTimeInMicroS();
     // }
-    */
+    
     return 0;
 }

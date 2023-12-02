@@ -9,5 +9,6 @@
 
 double Joystick_readX();
 double Joystick_readY();
+int getDirection();
 
 #endif

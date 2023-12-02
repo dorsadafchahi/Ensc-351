@@ -1,17 +1,18 @@
 #include "LEDmatrix.h"
 
-char zero[] = {};
-char one[] = {};
-char two[] = {};
-char three[] = {};
-char four[] = {};
-char five[] = {};
-char six[] = {};
-char seven[] = {};
-char eight[] = {};
-char nine[] = {};
+char zero[] =   {7, 5, 5, 5, 5, 5, 7};
+char one[] =    {3, 2, 2, 2, 2, 2, 7};
+char two[] =    {7, 4, 4, 7, 1, 1, 7};
+char three[] =  {7, 4, 4, 7, 4, 4, 7};
+char four[] =   {5, 5, 5, 7, 4, 4, 4};
+char five[] =   {7, 1, 1, 7, 4, 4, 7};
+char six[] =    {7, 1, 1, 7, 5, 5, 7};
+char seven[] =  {7, 4, 4, 4, 4, 4, 4};
+char eight[] =  {7, 5, 5, 7, 5, 5, 7};
+char nine[] =   {7, 5, 5, 7, 4, 4, 4};
+char decimal =  8;
 
-static int initI2cBus(char* bus, int address) 
+int initI2cBus(char* bus, int address) 
 { 
     int i2cFileDesc = open(bus, O_RDWR); 
     int result = ioctl(i2cFileDesc, I2C_SLAVE, address); 
@@ -22,19 +23,23 @@ static int initI2cBus(char* bus, int address)
     return i2cFileDesc; 
 }
 
-static void writeI2cReg(int i2cFileDesc, unsigned char regAddr, unsigned char value) 
+void writeI2cReg(int i2cFileDesc, unsigned char regAddr, unsigned char *value) 
 { 
-    unsigned char buff[2]; 
+    unsigned char buff[15]; 
     buff[0] = regAddr; 
-    buff[1] = value; 
-    int res = write(i2cFileDesc, buff, 2); 
-    if (res != 2) { 
+    int i2 = 1;
+    for (int i = 0; i < 8; i++){
+        buff[i2] = value[i];
+        i2 = i2 + 2;
+    }
+    int res = write(i2cFileDesc, buff, 17); 
+    if (res != 17) { 
         perror("I2C: Unable to write i2c register."); 
         exit(1); 
     }
 }
 
-char intToBinary(int number){
+char *intToBinary(int number){
     switch (number) {
     case 0:
         return zero;
@@ -74,7 +79,7 @@ char intToBinary(int number){
 void displayInt(int number){
     int i2cFileDesc = initI2cBus(I2CDRV_LINUX_BUS1, I2C_DEVICE_ADDRESS);
 
-    char LEDdisplay[7];
+    unsigned char LEDdisplay[8];
     int num1;
     int num2;
 
@@ -101,13 +106,59 @@ void displayInt(int number){
     }
 
     //convert the num1 and num2 to binary for LED display described at top of file
-    char number1 = intToBinary(num1);
-    char number2 = intToBinary(num2);
+    char *number1 = intToBinary(num1);
+    char *number2 = intToBinary(num2);
 
     for (int i = 0; i < 8; i++){
-        char bothnums = number1[i] << 4 | number2[i];
+        char bothnums = (number2[i] << 4) + number1[i];
         LEDdisplay[i] = bothnums;
     }
+    LEDdisplay[7] = 0;
+    writeI2cReg(i2cFileDesc, 0x00, LEDdisplay); 
 
-    writeI2cReg
+    close(i2cFileDesc); 
+}
+
+void displayDouble(double number) {
+    int i2cFileDesc = initI2cBus(I2CDRV_LINUX_BUS1, I2C_DEVICE_ADDRESS);
+    
+    unsigned char LEDdisplay[8];
+    int num1;
+    int num2;
+
+    int number10 = number * 10;
+        //single digit number (eg 07, 09, 00)
+    if (number10 < 10){
+        num1 = 0;
+        //check if number is equal or lower than 0
+        if (number10 <= 0){
+            num2 = 0;
+        }
+        else{
+            num2 = number10 % 10; //found on stack overflow
+        }
+    }
+    //double digit number (eg 10, 48, 92)
+    else if (number10 <= 99){
+        num1 = (number10 / 10) % 10;
+        num2 = number10 % 10;
+    }
+    //if number is bigger than 99, then set number to 99
+    else if (number10 > 99){
+        num1 = 9;
+        num2 = 9;
+    }
+
+    //convert the num1 and num2 to binary for LED display described at top of file
+    char *number1 = intToBinary(num1);
+    char *number2 = intToBinary(num2);
+
+    for (int i = 0; i < 8; i++){
+        char bothnums = (number2[i] << 4) + number1[i];
+        LEDdisplay[i] = bothnums;
+    }
+    LEDdisplay[7] = 8;
+    writeI2cReg(i2cFileDesc, 0x00, LEDdisplay); 
+
+    close(i2cFileDesc); 
 }

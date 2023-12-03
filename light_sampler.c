@@ -46,12 +46,12 @@ int main(int argc, char* args[])
     // }
 
     //testing for photoresistor
-    double photoVALUE;
-    for (int j = 0; j < 1000; j++){
-        photoVALUE = sampleInVolts();
-        printf("Photoresistor value : %f\n", photoVALUE);
-        sleepForMs(100);
-    }
+    // double photoVALUE;
+    // for (int j = 0; j < 1000; j++){
+    //     photoVALUE = sampleInVolts();
+    //     printf("Photoresistor value : %f\n", photoVALUE);
+    //     sleepForMs(100);
+    // }
    
     // //initialize the GPIO USER BUTTON
     runCommand("config-pin p8.43 gpio");
@@ -63,31 +63,31 @@ int main(int argc, char* args[])
     runCommand("i2cset -y 1 0x70 0x21 0x00");
     runCommand("i2cset -y 1 0x70 0x81 0x00");
 
-    //long long start_time = getTimeInMicroS();
-    //long long current_time = getTimeInMicroS();
+    long long start_time = getTimeInMicroS();
+    long long current_time = getTimeInMicroS();
     
-    // //run thread 1 to fill the struct
-    // pthread_create(&thread1, NULL, &Sampler_startSampling, NULL);
-    // // sleepForMs(1);
-    // while(1){
-    //     //every 1 second, the second thread will run again and again, printing output to the screen based on the struct values given from the first thread
-    //     if (current_time > start_time + 1000000){
-    //         //thread2 for calculations of the struct data
-    //         pthread_create(&thread2, NULL, &Sampler_startAnalysis, NULL);
-    //         start_time = getTimeInMicroS();
-    //     }   
-    //     //add a case if the user button is pressed, then exit program
-    //     if (getGPIOvalue() == 48){// 48 = pressed
-    //         printf("Shutting down...\n");
-    //         pthread_join(thread1, NULL);
-    //         pthread_join(thread2, NULL);
-    //         pthread_cancel(thread1);
-    //         pthread_cancel(thread2);
-    //         Sampler_stopSampling();
-    //         return 0;
-    //     }
-    //     current_time = getTimeInMicroS();
-    // }
+    //run thread 1 to fill the struct
+    pthread_create(&thread1, NULL, &Sampler_startSampling, NULL);
+    // sleepForMs(1);
+    while(1){
+        //every 1 second, the second thread will run again and again, printing output to the screen based on the struct values given from the first thread
+        if (current_time > start_time + 1000000){
+            //thread2 for calculations of the struct data
+            pthread_create(&thread2, NULL, &Sampler_startAnalysis, NULL);
+            start_time = getTimeInMicroS();
+        }   
+        //add a case if the user button is pressed, then exit program
+        if (getGPIOvalue() == 48){// 48 = pressed
+            printf("Shutting down...\n");
+            pthread_join(thread1, NULL);
+            pthread_join(thread2, NULL);
+            pthread_cancel(thread1);
+            pthread_cancel(thread2);
+            Sampler_stopSampling();
+            return 0;
+        }
+        current_time = getTimeInMicroS();
+    }
     
     return 0;
 }

@@ -33,22 +33,24 @@ int main(int argc, char* args[])
     // }
 
     //testing for JOYSTICK
-    double Xval;
-    double Yval;
-    for (int i=0; i < 1000; i++)
-    {
-        Xval = Joystick_readX();
-        Yval = Joystick_readY();
-        //Xval = convertToVoltage(Xval);
-        //Yval = convertToVoltage(Yval);
-        printf("X value : %f, Yval : %f\n", Xval, Yval);
-    }
+    // double Xval;
+    // double Yval;
+    // for (int i=0; i < 1000; i++)
+    // {
+    //     Xval = Joystick_readX();
+    //     Yval = Joystick_readY();
+    //     //Xval = convertToVoltage(Xval);
+    //     //Yval = convertToVoltage(Yval);
+    //     printf("X value : %f, Yval : %f\n", Xval, Yval);
+    //     sleepForMs(100);
+    // }
 
     //testing for photoresistor
     double photoVALUE;
     for (int j = 0; j < 1000; j++){
         photoVALUE = sampleInVolts();
         printf("Photoresistor value : %f\n", photoVALUE);
+        sleepForMs(100);
     }
    
     // //initialize the GPIO USER BUTTON

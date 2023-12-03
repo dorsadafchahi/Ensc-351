@@ -126,31 +126,30 @@ void *Sampler_startAnalysis() {
     printf("Interval ms (%llu, %llu) avg=%llu   Samples V (%f, %f) avg=%f   # Dips:   %d   # Samples:    %d\n", min_time, max_time, average_time, min_voltage, max_voltage, average_voltage, num_dips, buffer_index);
 
     //this is area where we display onto the LED matrix based on the joystick position
-    //0 = nothing, 1 = up, 2 = right, 3 = down, 4 = left
-    // int joystick_dir = joytickreaddirection();
-    // switch(joystick_dir):
-    // case 0:
-    //     //display num of dips on the LED
-    //     displayInt(num_dips);
-    //     break;
-    // case 1:
-    //     //display max num of voltage max_V
-    //     displayDouble(max_voltage);
-    //     break;
-    // case 2:
-    //     //display max interval between times max_time
-    //     double maxT = (double)max_time;
-    //     displayDouble(maxT);
-    //     break;
-    // case 3:
-    //     //display min num of voltage min_V
-    //     displayDouble(min_voltage);
-    //     break;
-    // case 4:
-    //     //display min interval between times min_time
-    //     double minT = (double)min_time;
-    //     displayDouble(minT);
-    //     break;
+    int joystick_dir = getDirection();
+    switch(joystick_dir):
+    case 0://nothing
+        //display num of dips on the LED
+        displayInt(num_dips);
+        break;
+    case 1://left
+        //display min interval between times min_time
+        double minT = (double)min_time;
+        displayDouble(minT);
+        break;
+    case 2://right
+        //display max interval between times max_time
+        double maxT = (double)max_time;
+        displayDouble(maxT);
+        break;
+    case 3://up
+        //display max num of voltage max_V
+        displayDouble(max_voltage);
+        break;
+    case 4://down
+        //display min num of voltage min_V
+        displayDouble(min_voltage);
+        break;
     return NULL;
 }
 

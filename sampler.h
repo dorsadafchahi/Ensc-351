@@ -17,6 +17,9 @@ typedef struct {
     long long getTimeInMicroSeconds;
 } samplerDatapoint_t;
 
+//function to get voltage reading from photoresistor
+double sampleInVolts();
+
 // Begin/end the background thread which samples light levels.
 void *Sampler_startSampling();
 void Sampler_stopSampling();

@@ -76,7 +76,6 @@ void *Sampler_startSampling()
 
 void *Sampler_startAnalysis()
 {
-    // int buffer_index = 0;
     // these are all the values we will calculate in this function for printf at the end
     double average_voltage = 0;
     double min_voltage = 0.9;
@@ -135,11 +134,12 @@ void *Sampler_startAnalysis()
         }
     }
 
+    printf("Interval ms (%llu, %llu) avg=%llu   Samples V (%f, %f) avg=%f   # Dips:   %d   # Samples:    %d\n", min_time, max_time, average_time, min_voltage, max_voltage, average_voltage, num_dips, buffer_index);
+
     // reset the buffer_index to 0, to make the thread1 start from 0 filling the struct array
     buffer_index = 0;
     // unlock the mutex for use
     pthread_mutex_unlock(&mutexlock);
-    printf("Interval ms (%llu, %llu) avg=%llu   Samples V (%f, %f) avg=%f   # Dips:   %d   # Samples:    %d\n", min_time, max_time, average_time, min_voltage, max_voltage, average_voltage, num_dips, buffer_index);
 
     // this is area where we display onto the LED matrix based on the joystick position
     int joystick_dir = getDirection();

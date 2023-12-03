@@ -126,7 +126,7 @@ void *Sampler_startAnalysis() {
     printf("Interval ms (%llu, %llu) avg=%llu   Samples V (%f, %f) avg=%f   # Dips:   %d   # Samples:    %d\n", min_time, max_time, average_time, min_voltage, max_voltage, average_voltage, num_dips, buffer_index);
 
     //this is area where we display onto the LED matrix based on the joystick position
-    int joystick_dir = getDirection();
+    int joystick_dir = getDirections();
     switch(joystick_dir):
     case 0://nothing
         //display num of dips on the LED

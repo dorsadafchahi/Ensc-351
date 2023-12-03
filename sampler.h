@@ -10,6 +10,8 @@
 #include <pthread.h>
 #include "time.h"
 #include "LEDmatrix.h"
+#include "joystick.h"
+
 #define PhotoRes "/sys/bus/iio/devices/iio:device0/in_voltage1_raw"
 
 typedef struct {

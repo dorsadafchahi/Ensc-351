@@ -27,7 +27,19 @@ double Joystick_readY() {
 }
 
 int getDirection(){
-	// double Xval = Joystick_readX();
-	// double Yval = Joystick_readY();
+	double Xval = Joystick_readX();
+	double Yval = Joystick_readY();
+	if(Xval > Yval && Xval >= (double)3700){
+		return 1; //Left 
+	}
+	else if((Xval < Yval && Xval <= (double)205) || Xval == (double)0){
+		return 2; //Right
+	}
+	else if(Yval > Xval && Yval >= (double)3700){
+		return 3; //Up
+	}
+	else if((Yval < Xval && Yval <= (double)205 ) || Yval == (double)0){
+		return 4; //Down
+	}
 	return 0;
 }

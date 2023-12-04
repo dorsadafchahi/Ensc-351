@@ -32,13 +32,13 @@ int getDirection(){
 	if(Xval > Yval && Xval >= (double)3700){
 		return 1; //Left 
 	}
-	else if((Xval < Yval && Xval <= (double)205) || Xval == (double)0){
+	else if((Xval < Yval && Xval <= (double)1100) || Xval == (double)0){
 		return 2; //Right
 	}
 	else if(Yval > Xval && Yval >= (double)3700){
 		return 3; //Up
 	}
-	else if((Yval < Xval && Yval <= (double)205 ) || Yval == (double)0){
+	else if((Yval < Xval && Yval <= (double)1100) || Yval == (double)0){
 		return 4; //Down
 	}
 	return 0;

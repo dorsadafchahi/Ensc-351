@@ -11,4 +11,7 @@ long long getTimeInMicroS(void);
 // Add delay (in number of milliseconds)
 void sleepForMs(long long delayInMs);
 
+// Convert Microseconds to milliseconds
+double displayMicroToMs(long long val);
+
 #endif

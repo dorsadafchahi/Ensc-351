@@ -20,3 +20,9 @@ void sleepForMs(long long delayInMs) {
     struct timespec reqDelay = {seconds, nanoseconds};
     nanosleep(&reqDelay, (struct timespec *) NULL);
 }
+
+double displayMicroToMs(long long val) {
+    double ms = 0;
+    ms = 1.0f * val / 1000;
+    return ms;
+}

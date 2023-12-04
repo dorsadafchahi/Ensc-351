@@ -1,8 +1,0 @@
-all:
-
-	arm-linux-gnueabihf-gcc -static	-Wall -g -std=c99 -D _POSIX_C_SOURCE=200809L -Werror light_sampler.c sampler.c button.c joystick.c time.c LEDmatrix.c -o light_sampler -lpthread
-
-	cp light_sampler ~/ensc351/public/myApps/
-
-clean:
-	rm -f light_sampler

@@ -4,6 +4,8 @@
 samplerDatapoint_t *buffer;
 // index for the buffer array
 int buffer_index;
+long long prev_endtime = 0;
+bool last_dip = false;
 
 // variables mutex lock within both threads
 pthread_mutex_t mutexlock;
@@ -42,14 +44,16 @@ void *Sampler_startSampling()
         printf("mutex lock initialization failed\n");
         exit(-1);
     }
+    prev_endtime = getTimeInMicroS();
 
     // start sampling here
     while (1)
     {
-        int value;
+        double value;
         double voltage;
         value = sampleInVolts();
         voltage = convertToVoltage(value);
+        // printf("val=%f, volt=%f\n", value, voltage);
 
         // this should only happen if thread2 is gonna stop, eg the button was pressed
         if (buffer_index > 900)
@@ -69,21 +73,20 @@ void *Sampler_startSampling()
         // unlock the mutex, for the second thread to gain access if need be
         pthread_mutex_unlock(&mutexlock);
 
-        sleepForMs(1.5);
+        sleepForMs(3);
     }
     return NULL;
 }
 
 void *Sampler_startAnalysis()
 {
-    // int buffer_index = 0;
     // these are all the values we will calculate in this function for printf at the end
     double average_voltage = 0;
     double min_voltage = 0.9;
     double max_voltage = 0.9;
     long long average_time = 0;
     long long max_time = 0;
-    long long min_time = 2;
+    long long min_time = 10000;
     int num_dips = 0;
 
     // lock the mutex for use
@@ -105,16 +108,22 @@ void *Sampler_startAnalysis()
         }
 
         // calculate if there was a dip
-        if (calculate_dip(i, average_voltage) == true)
+        // needs to be adjusted
+        if ((calculate_dip(i, average_voltage) == true) && (last_dip == false))
         {
+            last_dip = true;
             num_dips++;
+        } else if (last_dip == true) {
+            if (calculate_dip(i, average_voltage) == false) {
+                last_dip = false;
+            }
         }
 
         // time analysis
         long long time_interval = 0;
         if (i == 0)
         {
-            time_interval = buffer[0].getTimeInMicroSeconds;
+            time_interval = (buffer[0].getTimeInMicroSeconds - prev_endtime);
         }
         else
         {
@@ -133,13 +142,18 @@ void *Sampler_startAnalysis()
         {
             max_time = time_interval;
         }
+
+        if (i == (buffer_index - 1)) {
+            prev_endtime = getTimeInMicroS();
+        }
     }
+
+    printf("Interval ms (%.3f, %.3f) avg=%.3f   Samples V (%.3f, %.3f) avg=%.3f   # Dips:   %d   # Samples:    %d\n", displayMicroToMs(min_time), displayMicroToMs(max_time), displayMicroToMs(average_time), min_voltage, max_voltage, average_voltage, num_dips, buffer_index);
 
     // reset the buffer_index to 0, to make the thread1 start from 0 filling the struct array
     buffer_index = 0;
     // unlock the mutex for use
     pthread_mutex_unlock(&mutexlock);
-    printf("Interval ms (%llu, %llu) avg=%llu   Samples V (%f, %f) avg=%f   # Dips:   %d   # Samples:    %d\n", min_time, max_time, average_time, min_voltage, max_voltage, average_voltage, num_dips, buffer_index);
 
     // this is area where we display onto the LED matrix based on the joystick position
     int joystick_dir = getDirection();
@@ -151,11 +165,11 @@ void *Sampler_startAnalysis()
         break;
     case 1: // left
         // display min interval between times min_time
-        displayDouble((double)min_time);
+        displayDouble(displayMicroToMs(min_time));
         break;
     case 2: // right
         // display max interval between times max_time
-        displayDouble((double)max_time);
+        displayDouble(displayMicroToMs(max_time));
         break;
     case 3: // up
         // display max num of voltage max_V
@@ -197,11 +211,22 @@ bool calculate_dip(int index, double average)
     // a dip is detected if the voltage is 0.1V or more away from curent average
     // but, if the difference from the previous V and current V is less than 0.03V difference,
     //  then it is classified not a dip
-    if (abs(buffer[index - 1].sampleInV - buffer[index].sampleInV) < 0.03)
+    double hysterisis = buffer[index - 1].sampleInV - buffer[index].sampleInV;
+    double dip = average - buffer[index].sampleInV;
+    if (hysterisis < 0) {
+        hysterisis = hysterisis * -1;
+    }
+    if (dip < 0) {
+        dip = dip * -1;
+    }
+
+    // printf("hys: %f, dip: %f\n", hysterisis, dip);
+
+    if (hysterisis < 0.03)
     {
         return false;
     }
-    else if (abs(average - buffer[index].sampleInV) >= 0.1)
+    else if (dip >= 0.1)
     {
         return true;
     }

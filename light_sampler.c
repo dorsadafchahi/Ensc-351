@@ -21,54 +21,23 @@ pthread_t thread2;
 
 int main(int argc, char* args[])
 {
-    printf("Starting to sample data...\n");
-    //testing for the LED matrix
-    // for (double i = -5.0; i < 12.0; i+=0.1){
-    //     displayDouble(i);
-    //     sleepForMs(10);
-    // }
-    // for(int i = -5; i < 111; i++){
-    //     displayInt(i);
-    //     sleepForMs(10);
-    // }
-
-    //testing for JOYSTICK
-    // double Xval;
-    // double Yval;
-    // for (int i=0; i < 1000; i++)
-    // {
-    //     Xval = Joystick_readX();
-    //     Yval = Joystick_readY();
-    //     //Xval = convertToVoltage(Xval);
-    //     //Yval = convertToVoltage(Yval);
-    //     printf("X value : %f, Yval : %f\n", Xval, Yval);
-    //     sleepForMs(100);
-    // }
-
-    //testing for photoresistor
-    // double photoVALUE;
-    // for (int j = 0; j < 1000; j++){
-    //     photoVALUE = sampleInVolts();
-    //     printf("Photoresistor value : %f\n", photoVALUE);
-    //     sleepForMs(100);
-    // }
-   
     // //initialize the GPIO USER BUTTON
     runCommand("config-pin p8.43 gpio");
     writetoFile("in");
 
-    // //initialize the LED MATRIX (TO DO)
+    //initialize the LED MATRIX (TO DO)
     runCommand("config-pin P9_18 i2c");
     runCommand("config-pin P9_17 i2c");
     runCommand("i2cset -y 1 0x70 0x21 0x00");
     runCommand("i2cset -y 1 0x70 0x81 0x00");
+    printf("Starting to sample data...\n");
 
     long long start_time = getTimeInMicroS();
     long long current_time = getTimeInMicroS();
     
     //run thread 1 to fill the struct
     pthread_create(&thread1, NULL, &Sampler_startSampling, NULL);
-    // sleepForMs(1);
+    sleepForMs(1);
     while(1){
         //every 1 second, the second thread will run again and again, printing output to the screen based on the struct values given from the first thread
         if (current_time > start_time + 1000000){

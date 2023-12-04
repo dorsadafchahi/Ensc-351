@@ -24,7 +24,7 @@ void swapContent(double *d1, double *d2)
  */
 void tradeArrays(double *array1, double *array2, int size)
 {
-	signed int i; // will let i become -1 and exit the loop;
+	signed int i; // ----------------------------------------------------//SOLVED ERROR HERE : unsigned -> signed to allow i to become negative and end the for loop properly
 	for (i = size-1; i >= 0; i--) { 
 		swapContent(array1+i, array2+i);
 	}

@@ -10,12 +10,17 @@
 #include <pthread.h>
 #include "time.h"
 #include "LEDmatrix.h"
+#include "joystick.h"
+
 #define PhotoRes "/sys/bus/iio/devices/iio:device0/in_voltage1_raw"
 
 typedef struct {
     double sampleInV;
     long long getTimeInMicroSeconds;
 } samplerDatapoint_t;
+
+//function to get voltage reading from photoresistor
+double sampleInVolts();
 
 // Begin/end the background thread which samples light levels.
 void *Sampler_startSampling();

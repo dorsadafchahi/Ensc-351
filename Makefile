@@ -1,6 +1,6 @@
 # Define the common flags and compiler
 CC = arm-linux-gnueabihf-gcc
-CFLAGS = -static -Wall -g -std=c99 -D _POSIX_C_SOURCE=200809L -Werror
+CFLAGS = -Wall -g -std=c99 -D _POSIX_C_SOURCE=200809L -Werror
 
 # Target for light_sampler
 light_sampler: light_sampler.c sampler.c button.c joystick.c time.c LEDmatrix.c

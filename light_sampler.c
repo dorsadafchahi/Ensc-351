@@ -1,12 +1,16 @@
-//This program will implement a light dip analyser
-//Assignment 2 ENSC351
-//Code written by and contributed by:
-//Nicholas H, Dorsa, Lester, Jim P.
+// Assignment 2 ENSC351
+// Started November 16th, 2023
+// Finished and submitted December 5th, 2023
+// Code written by and contributed by:
+// Nicholas H, Dorsa A, Lester P, Jim P.
+// 
+// This program will implement a light dip analyser
 //
-//Description of this program:
-//  Sample from photoresistor ~500 times a second
-//  other stuff
-//  Print this data to 8x8 LED matrix
+// Description of this program:
+//  Sample from photoresistor ~500 times a second, and record times
+//  Calculate values based on this data
+//  Print this data to 8x8 LED matrix based on the joystick direction
+//  Refresh this data every second
 //  Exit program from pressing USER/BOOT button
 
 #include "joystick.h"
